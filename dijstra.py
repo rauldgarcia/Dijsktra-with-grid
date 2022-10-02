@@ -9,7 +9,7 @@ AZUL = (0, 0, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN= (0, 255, 0)
-tamtab=10 #MODIFICAR DEPENDIENDO EL NUMERO DE CELDAS QUE SE QUIERAN EN EL CUADRO
+tamtab=35 #MODIFICAR DEPENDIENDO EL NUMERO DE CELDAS QUE SE QUIERAN EN EL CUADRO
 tamCuadro = 20
 inicio=-1
 fin=-1
@@ -18,6 +18,9 @@ yinicio=-1
 xfin=-1
 yfin=-1
 obsop='s'
+obs=-1
+raiz=(2**0.5)
+dia='a'
 
 #AUXILIARES PARA GRAFICAR GRID
 x=[]
@@ -117,37 +120,80 @@ while not gameOver:
     pygame.draw.rect(screen, RED, [x[fin], y[fin], tamCuadro, tamCuadro], 0)
     pygame.display.flip()
 
-    #CREACION DE MATRIZ DE MOVIMIENTOS
-    matrix=np.zeros(((tamtab**2),(tamtab**2)+tamtab))
-    for i in range(tamtab**2):
-        #Para los de la orilla izquierda de la cuadricula
-        if i % tamtab == 0 or i ==0:
-            matrix[i][i]=0
-            matrix[i][i+1]=1
-            matrix[i][i+tamtab]=1
-            matrix[i][i-tamtab]=1
-        
-        #para los de la orilla derecha de la cuadricula
-        elif (i+1) % tamtab == 0:
-            matrix[i][i]=0
-            matrix[i][i-1]=1
-            matrix[i][i+tamtab]=1
-            matrix[i][i-tamtab]=1
-        
-        #para todos los cuadros restantes
-        else:
-            #Todos los valores en la diagonal principal son 0
-            matrix[i][i]=0
-            matrix[i][i+1]=1
-            matrix[i][i-1]=1
-            matrix[i][i+tamtab]=1
-            matrix[i][i-tamtab]=1
+    #OPCION DE MOVIMIENTOS EN DIAGONAL
+    while dia != 'n' and dia != 's':
+        dia=str(input('Desea que se pueda mover en diagonal(s/n):'))
 
-    matriz2=np.delete(matrix,((tamtab**2)+2,(tamtab**2)+1,(tamtab**2)),axis=1)
-    
+    if dia == 'n':
+        #CREACION DE MATRIZ DE MOVIMIENTOS RECTOS
+        matrix=np.zeros(((tamtab**2),(tamtab**2)+tamtab))
+        for i in range(tamtab**2):
+            #Para los de la orilla izquierda de la cuadricula
+            if i % tamtab == 0 or i ==0:
+                matrix[i][i]=0
+                matrix[i][i+1]=1
+                matrix[i][i+tamtab]=1
+                matrix[i][i-tamtab]=1
+            
+            #para los de la orilla derecha de la cuadricula
+            elif (i+1) % tamtab == 0:
+                matrix[i][i]=0
+                matrix[i][i-1]=1
+                matrix[i][i+tamtab]=1
+                matrix[i][i-tamtab]=1
+            
+            #para todos los cuadros restantes
+            else:
+                #Todos los valores en la diagonal principal son 0
+                matrix[i][i]=0
+                matrix[i][i+1]=1
+                matrix[i][i-1]=1
+                matrix[i][i+tamtab]=1
+                matrix[i][i-tamtab]=1
+
+        matriz2=np.delete(matrix,((tamtab**2)+2,(tamtab**2)+1,(tamtab**2)),axis=1)
+
+    elif dia == 's':
+        #CREACION DE MATRIZ DE MOVIMIENTOS
+        matrix=np.zeros(((tamtab**2),(tamtab**2)+tamtab))
+        for i in range(tamtab**2):
+            #Para los de la orilla izquierda de la cuadricula
+            if i % tamtab == 0 or i ==0:
+                matrix[i][i]=0
+                matrix[i][i+1]=1
+                matrix[i][i+tamtab]=1
+                matrix[i][i-tamtab]=1
+                matrix[i][i+tamtab+1]=raiz
+                matrix[i][i-tamtab+1]=raiz
+            
+            #para los de la orilla derecha de la cuadricula
+            elif (i+1) % tamtab == 0:
+                matrix[i][i]=0
+                matrix[i][i-1]=1
+                matrix[i][i+tamtab]=1
+                matrix[i][i-tamtab]=1
+                matrix[i][i+tamtab-1]=raiz
+                matrix[i][i-tamtab-1]=raiz
+            
+            #para todos los cuadros restantes
+            else:
+                #Todos los valores en la diagonal principal son 0
+                matrix[i][i]=0
+                matrix[i][i+1]=1
+                matrix[i][i-1]=1
+                matrix[i][i+tamtab]=1
+                matrix[i][i-tamtab]=1
+                matrix[i][i+tamtab-1]=raiz
+                matrix[i][i+tamtab+1]=raiz
+                matrix[i][i-tamtab-1]=raiz
+                matrix[i][i-tamtab+1]=raiz
+
+        matriz2=np.delete(matrix,((tamtab**2)+2,(tamtab**2)+1,(tamtab**2)),axis=1)
+
     #AGREGADO DE OBSTACULOS
-    while obsop == 's':
+    while obsop != 'n':
         obsop=str(input('Desea agregar un obstaculo(s/n):'))
+        obsaux='n'
 
         while obsop == 's':
             
@@ -168,8 +214,7 @@ while not gameOver:
             else:
                 obsaux='n'
                 obsop='s'
-
-        obs=(tamtab*(yobs-1))+xobs-1
+                obs=(tamtab*(yobs-1))+xobs-1
 
         if obs == inicio:
             print('El obstaculo es:')
