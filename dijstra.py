@@ -6,31 +6,127 @@ AZUL = (0, 0, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN= (0, 255, 0)
-tamCuadro = 40
+tamCuadro = 20
+tamtab=40
+inicio=-1
+fin=-1
+xinicio=-1
+yinicio=-1
+xfin=-1
+yfin=-1
 
+while inicio < 0  or inicio >= tamtab**2:
+
+    while xinicio <= 0 or xinicio > tamtab: 
+        xinicio=int(input('Ingrese la coordenada X de inicio:'))
+        if xinicio <= 0 or xinicio > tamtab:
+            print('La coordenada de inicio en X esta fuera del rango.') 
+    
+    while yinicio <= 0 or yinicio >tamtab:
+        yinicio=int(input('Ingrese la coordenada Y de inicio:'))
+        if yinicio <= 0 or yinicio > tamtab:
+            print('La coordenada de inicio en Y esta fuera del rango.')
+
+    inicio=(xinicio*yinicio)-1
+    print('inicio:')
+    print(inicio)
+    if inicio < 0 or inicio >= tamtab**2:
+        print('El inicio esta fuera del rango.')
+
+while fin < 0 or fin >= tamtab**2 or inicio == fin:
+
+    while xfin <= 0 or xfin > tamtab:
+        xfin=int(input('Ingrese la coordenada x de fin:'))
+        if xfin <= 0 or xfin > tamtab:
+            print('La coordenada de fin en X esta fuera del rango.') 
+
+    while yfin <= 0 or yfin >tamtab:
+        yfin=int(input('Ingrese la coordenada y de fin:'))
+        if yfin <= 0 or yfin > tamtab:
+            print('La coordenada de fin en Y esta fuera del rango.')
+    
+    fin=(xfin*yfin)-1
+    print('fin:')
+    print(fin)
+    if fin < 0 or fin >= tamtab**2:
+        print('El fin esta fuera del rango.')
+
+    if inicio == fin:
+        print('El inicio y el fin son iguales:')
+        xfin=-1
+        yfin=-1
+
+#CREACION DE MATRIZ DE MOVIMIENTOS
+matrix=np.zeros(((tamtab**2),(tamtab**2)+tamtab))
+for i in range(tamtab**2):
+    #Para los de la orilla izquierda de la cuadricula
+    if i % tamtab == 0 or i ==0:
+        matrix[i][i]=0
+        matrix[i][i+1]=1
+        matrix[i][i+tamtab]=1
+        matrix[i][i-tamtab]=1
+    
+    #para los de la orilla derecha de la cuadricula
+    elif (i+1) % tamtab == 0:
+        matrix[i][i]=0
+        matrix[i][i-1]=1
+        matrix[i][i+tamtab]=1
+        matrix[i][i-tamtab]=1
+    
+    #para todos los cuadros restantes
+    else:
+        #Todos los valores en la diagonal principal son 0
+        matrix[i][i]=0
+        matrix[i][i+1]=1
+        matrix[i][i-1]=1
+        matrix[i][i+tamtab]=1
+        matrix[i][i-tamtab]=1
+
+matriz2=np.delete(matrix,((tamtab**2)+2,(tamtab**2)+1,(tamtab**2)),axis=1)
+
+#CALCULO DE CAMINO MAS CORTO Y DISTANCIA CON ALGORITMO DE DIJKSTRA
+camino=(dijkstra.find_shortest_path(matriz2,inicio,fin))
+print('El camino es:')
+print(camino)
+distancia=(dijkstra.find_shortest_distance(matriz2,inicio,fin))
+print('La distancia es:')
+print(distancia)
+
+#AUXILIARES PARA GRAFICAR GRID
+x=[]
+for i in range((tamtab**2)):
+    if i == 0:
+        x=np.append(x,1)
+    
+    elif i % tamtab == 0:
+        x=np.append(x,1)
+
+    elif i > 0:
+        aux=x[i-1]
+        x=np.append(x,aux+tamCuadro+1)
+
+y=[]
+for i in range((tamtab**2)):
+    if i == 0:
+        y=np.append(y,1)
+
+    elif i % tamtab == 0:
+        aux=y[i-1]
+        y=np.append(y,aux+tamCuadro+1)
+
+    elif i > 0:
+        aux=y[i-1]
+        y=np.append(y,aux)
+
+#CREACION DE GRID 
 pygame.init()
-size = (123, 123)
+size = (tamtab+(tamtab*tamCuadro),tamtab+(tamtab*tamCuadro))
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Grid on PYGAME")
 clock = pygame.time.Clock()
 gameOver = False
-wmat = [[0, 1, 0, 1, 0, 0, 0, 0, 0],
-        [1, 0, 1, 0, 1, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0, 1, 0, 0, 0],
-        [1, 0, 0, 0, 1, 0, 1, 0, 0],
-        [0, 1, 0, 1, 0, 1, 0, 1, 0],
-        [0, 0, 1, 0, 1, 0, 0, 0, 1],
-        [0, 0, 0, 1, 0, 0, 0, 1, 0],
-        [0, 0, 0, 0, 1, 0, 1, 0, 1],
-        [0, 0, 0, 0, 0, 1, 0, 1, 0]]
 
-camino=(dijkstra.find_shortest_path(wmat,0,8))
-print(camino)
-print(dijkstra.find_shortest_distance(wmat,0,8))
-
-x=[1,42,83,1,42,83,1,42,83]
-y=[1,1,1,42,42,42,83,83,83]
-
+#INICIO DE GRID
 while not gameOver:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -40,14 +136,14 @@ while not gameOver:
         for j in range(1, size[1], tamCuadro + 1):
             pygame.draw.rect(screen, AZUL, [i, j, tamCuadro, tamCuadro], 0)
     pygame.display.flip()
-    pygame.time.delay(1000)
-    pygame.draw.rect(screen, RED, [x[0], y[0], tamCuadro, tamCuadro], 0)
-    pygame.draw.rect(screen, RED, [x[8], y[8], tamCuadro, tamCuadro], 0)
+    pygame.time.delay(100)
+    pygame.draw.rect(screen, RED, [x[inicio], y[inicio], tamCuadro, tamCuadro], 0)
+    pygame.draw.rect(screen, RED, [x[fin], y[fin], tamCuadro, tamCuadro], 0)
     pygame.display.flip()
-    pygame.time.delay(1000)
+    pygame.time.delay(100)
     for i in camino:
         pygame.draw.rect(screen, GREEN, [x[i], y[i], tamCuadro, tamCuadro], 0)
         pygame.display.flip()
-        pygame.time.delay(1000)
+        pygame.time.delay(100)
     gameOver = True
 pygame.quit()
