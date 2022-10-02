@@ -1,3 +1,4 @@
+from cmath import inf
 import pygame
 import dijkstra
 import numpy as np
@@ -6,14 +7,20 @@ AZUL = (0, 0, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN= (0, 255, 0)
+tamtab=10
 tamCuadro = 20
-tamtab=40
 inicio=-1
 fin=-1
 xinicio=-1
 yinicio=-1
 xfin=-1
 yfin=-1
+xobs=9
+yobs=10
+obs=(tamtab*(yobs-1))+xobs-1
+xobs2=10
+yobs2=9
+obs2=(tamtab*(yobs2-1))+xobs2-1
 
 while inicio < 0  or inicio >= tamtab**2:
 
@@ -27,7 +34,7 @@ while inicio < 0  or inicio >= tamtab**2:
         if yinicio <= 0 or yinicio > tamtab:
             print('La coordenada de inicio en Y esta fuera del rango.')
 
-    inicio=(xinicio*yinicio)-1
+    inicio=(tamtab*(yinicio-1))+xinicio-1
     print('inicio:')
     print(inicio)
     if inicio < 0 or inicio >= tamtab**2:
@@ -45,7 +52,7 @@ while fin < 0 or fin >= tamtab**2 or inicio == fin:
         if yfin <= 0 or yfin > tamtab:
             print('La coordenada de fin en Y esta fuera del rango.')
     
-    fin=(xfin*yfin)-1
+    fin=(tamtab*(yfin-1))+xfin-1
     print('fin:')
     print(fin)
     if fin < 0 or fin >= tamtab**2:
@@ -84,6 +91,16 @@ for i in range(tamtab**2):
 
 matriz2=np.delete(matrix,((tamtab**2)+2,(tamtab**2)+1,(tamtab**2)),axis=1)
 
+for i in range(tamtab**2):
+    matriz2[i][obs]=0
+    matriz2[obs][i]=0
+
+for i in range(tamtab**2):
+    matriz2[i][obs2]=0
+    matriz2[obs2][i]=0
+
+print(matriz2)
+
 #CALCULO DE CAMINO MAS CORTO Y DISTANCIA CON ALGORITMO DE DIJKSTRA
 camino=(dijkstra.find_shortest_path(matriz2,inicio,fin))
 print('El camino es:')
@@ -91,6 +108,8 @@ print(camino)
 distancia=(dijkstra.find_shortest_distance(matriz2,inicio,fin))
 print('La distancia es:')
 print(distancia)
+if distancia == inf:
+    print('No se puede llegar a ese punto.')
 
 #AUXILIARES PARA GRAFICAR GRID
 x=[]
@@ -138,6 +157,8 @@ while not gameOver:
     pygame.display.flip()
     pygame.time.delay(100)
     pygame.draw.rect(screen, RED, [x[inicio], y[inicio], tamCuadro, tamCuadro], 0)
+    pygame.draw.rect(screen, BLACK, [x[obs], y[obs], tamCuadro, tamCuadro], 0)
+    pygame.draw.rect(screen, BLACK, [x[obs2], y[obs2], tamCuadro, tamCuadro], 0)
     pygame.draw.rect(screen, RED, [x[fin], y[fin], tamCuadro, tamCuadro], 0)
     pygame.display.flip()
     pygame.time.delay(100)
