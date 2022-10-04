@@ -9,7 +9,7 @@ AZUL = (0, 0, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN= (0, 255, 0)
-tamtab=35 #MODIFICAR DEPENDIENDO EL NUMERO DE CELDAS QUE SE QUIERAN EN EL CUADRO
+tamtab=40 #MODIFICAR DEPENDIENDO EL NUMERO DE CELDAS QUE SE QUIERAN EN EL CUADRO
 tamCuadro = 20
 inicio=-1
 fin=-1
@@ -150,8 +150,11 @@ while not gameOver:
                 matrix[i][i-1]=1
                 matrix[i][i+tamtab]=1
                 matrix[i][i-tamtab]=1
+        
+        matriz2=matrix
 
-        matriz2=np.delete(matrix,((tamtab**2)+2,(tamtab**2)+1,(tamtab**2)),axis=1)
+        for i in range(tamtab):
+            matriz2=np.delete(matriz2,((tamtab**2)),axis=1)
 
     elif dia == 's':
         #CREACION DE MATRIZ DE MOVIMIENTOS
@@ -188,7 +191,10 @@ while not gameOver:
                 matrix[i][i-tamtab-1]=raiz
                 matrix[i][i-tamtab+1]=raiz
 
-        matriz2=np.delete(matrix,((tamtab**2)+2,(tamtab**2)+1,(tamtab**2)),axis=1)
+        matriz2=matrix
+
+        for i in range(tamtab):
+            matriz2=np.delete(matriz2,((tamtab**2)),axis=1)
 
     #AGREGADO DE OBSTACULOS
     while obsop != 'n':
